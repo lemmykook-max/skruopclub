@@ -1,7 +1,7 @@
 // Skru Op Club API: one Netlify Function behind /api/*.
-// Login: Netlify Identity (the user's JWT arrives as context.clientContext.user).
+// Login: Netlify Identity (the token is checked against /.netlify/identity/user).
 // Data: Netlify Blobs, store "skruop", keys members/<uid>, tasks/<id>, signups/<taskId>__<uid>.
-import { getStore, connectLambda } from "@netlify/blobs";
+import { getStore } from "@netlify/blobs";
 
 const json = (statusCode, body) => ({
   statusCode,
@@ -129,20 +129,34 @@ export async function route({ method, path, body, user, store }) {
   return json(404, { error: "Ukendt handling." });
 }
 
-export const handler = async (event, context) => {
+// Netlify Functions v2: Blobs is wired up automatically, and the function answers on /api/*.
+export const config = { path: "/api/*" };
+
+// Ask Netlify Identity who the token belongs to (the same site's /.netlify/identity/user endpoint).
+async function identify(req) {
+  const auth = req.headers.get("authorization") || "";
+  if (!/^Bearer\s+\S+/i.test(auth)) return null;
+  const res = await fetch(new URL("/.netlify/identity/user", req.url), { headers: { authorization: auth } });
+  if (!res.ok) return null;
+  const u = await res.json();
+  return u && u.id ? { sub: u.id, email: u.email || "", app_metadata: u.app_metadata || {} } : null;
+}
+
+export default async (req) => {
+  let r;
   try {
-    connectLambda(event);
     const store = getStore({ name: "skruop", consistency: "strong" });
-    const path = (event.path || "").replace(/^.*?\/(?:\.netlify\/functions\/)?api(?=\/|$)/, "");
+    const path = new URL(req.url).pathname.replace(/^.*?\/(?:\.netlify\/functions\/)?api(?=\/|$)/, "");
     let body = {};
-    if (event.body) {
-      try { body = JSON.parse(event.isBase64Encoded ? Buffer.from(event.body, "base64").toString("utf8") : event.body) || {}; }
-      catch { return json(400, { error: "Ugyldige data." }); }
+    if (req.method !== "GET" && req.method !== "DELETE") {
+      const text = await req.text();
+      if (text) { try { body = JSON.parse(text) || {}; } catch { body = null; } }
     }
-    const user = context.clientContext && context.clientContext.user;
-    return await route({ method: event.httpMethod, path, body, user, store });
+    if (body === null) r = json(400, { error: "Ugyldige data." });
+    else r = await route({ method: req.method, path, body, user: await identify(req), store });
   } catch (err) {
     console.error(err);
-    return json(500, { error: "Noget gik galt hos os. Prøv igen om lidt." });
+    r = json(500, { error: "Noget gik galt hos os: " + String((err && err.message) || err).slice(0, 200) });
   }
+  return new Response(r.body, { status: r.statusCode, headers: r.headers });
 };
