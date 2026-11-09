@@ -1,0 +1,10 @@
+{
+  "name": "skru-op-club",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Skru Op Club: et fællesskab, hvor vi får hinandens projekter i mål.",
+  "type": "module",
+  "dependencies": {
+    "@netlify/blobs": "11.1.4"
+  }
+}

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Skru Op Club</title>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Skru Op Club's own look: cream paper, ink, classic serif caps with a hand-drawn underline. Single theme by choice. */
+  --paper: #F6F1E8;
+  --card: #FFFDF8;
+  --ink: #1C1A17;
+  --muted: #6E675D;
+  --line: #DDD4C5;
+  --accent: #3F5A3C;      /* deep garden green: "jeg kommer" */
+  --accent-soft: #E3EADD;
+  --warn: #9A5B1E;
+  --display: "Libre Caslon Text", Georgia, "Times New Roman", serif;
+  --body: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--paper); color: var(--ink); font-family: var(--body);
+  font-size: 16px; line-height: 1.5;
+  padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+}
+button, input, textarea, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+.app { max-width: 560px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; }
+header.top { padding: 22px 18px 8px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+.brand { font-family: var(--display); text-transform: uppercase; font-size: 26px; line-height: 1; letter-spacing: .02em; }
+.brand small { display: block; font-family: var(--display); text-transform: none; font-size: 14px; color: var(--muted); margin-top: 6px; letter-spacing: 0; }
+.swoosh { display: block; width: 100%; max-width: 260px; height: 10px; margin-top: 8px; }
+.me-chip { font-size: 13px; color: var(--muted); text-align: right; }
+.me-chip b { color: var(--ink); font-weight: 600; display: block; }
+
+main { flex: 1; padding: 8px 18px 110px; display: flex; flex-direction: column; gap: 16px; }
+h2 { font-family: var(--display); text-transform: uppercase; font-weight: 400; font-size: 24px; line-height: 1.15; margin: 10px 0 0; text-wrap: balance; }
+h3 { font-family: var(--display); font-weight: 700; font-size: 19px; margin: 0; line-height: 1.25; text-wrap: balance; }
+.lead { color: var(--muted); margin: 0; }
+.banner { background: #FBEBD6; border: 1px solid #EBCFA8; color: #5E3B12; padding: 10px 12px; border-radius: 10px; font-size: 14px; }
+
+.balance { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tile { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.tile .n { font-family: var(--display); font-size: 30px; line-height: 1; font-variant-numeric: tabular-nums; }
+.tile .l { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.motto { font-family: var(--display); font-size: 14px; color: var(--muted); text-align: center; margin: 0; }
+
+.filters { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 6px 12px; font-size: 14px; cursor: pointer; }
+.pill[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+.task { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; position: relative; }
+.task.done { opacity: .72; }
+.task .when { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
+.datebox { font-family: var(--display); color: var(--ink); font-size: 15px; text-transform: uppercase; letter-spacing: .03em; }
+dl.facts { margin: 0; display: grid; grid-template-columns: 92px 1fr; gap: 4px 10px; font-size: 15px; }
+dl.facts dt { color: var(--muted); font-size: 13px; padding-top: 2px; }
+dl.facts dd { margin: 0; overflow-wrap: anywhere; }
+.hands { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 14px; }
+.dots { display: flex; gap: 4px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--accent); }
+.dot.on { background: var(--accent); }
+.who { color: var(--muted); font-size: 14px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.status { font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; }
+.status.open { background: var(--accent-soft); color: var(--accent); }
+.status.full { background: #EFE6D6; color: var(--warn); }
+.status.done { background: #E8E4DE; color: var(--muted); }
+.status.mine { background: var(--ink); color: var(--paper); }
+
+.btn { border: 1px solid var(--ink); background: var(--ink); color: var(--paper); border-radius: 10px; padding: 10px 16px; font-weight: 500; cursor: pointer; min-height: 44px; }
+.btn.ghost { background: transparent; color: var(--ink); }
+.btn.go { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.small { padding: 6px 12px; min-height: 36px; font-size: 14px; }
+.btn.link { border: none; background: none; color: var(--muted); text-decoration: underline; padding: 6px 4px; min-height: 36px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+form.card, .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.field { display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+.field:last-of-type { border-bottom: none; }
+.field label { font-weight: 600; font-size: 16px; }
+.field .hint { font-style: italic; font-size: 14px; color: var(--muted); }
+input[type="text"], input[type="date"], input[type="time"], input[type="number"], textarea, select {
+  width: 100%; border: 1px solid var(--line); background: var(--paper); border-radius: 8px; padding: 10px 12px; min-height: 44px;
+}
+textarea { min-height: 72px; resize: vertical; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tags { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; }
+.tag { border: 1px solid var(--line); background: var(--paper); border-radius: 8px; padding: 8px 6px; font-size: 14px; cursor: pointer; text-align: center; }
+.tag[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.err { color: #A3301F; font-size: 14px; }
+
+.member { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: grid; grid-template-columns: 44px 1fr; gap: 12px; }
+.avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; font-family: var(--display); font-size: 18px; }
+.member .meta { font-size: 13px; color: var(--muted); }
+.member p { margin: 4px 0 0; font-size: 15px; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.chip { font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; color: var(--muted); }
+.score { font-size: 13px; color: var(--accent); font-weight: 600; margin-top: 6px; font-variant-numeric: tabular-nums; }
+
+nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--line); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); }
+nav.tabs .inner { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+nav.tabs a { text-decoration: none; color: var(--muted); font-size: 12px; text-align: center; padding: 6px 2px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+nav.tabs a svg { width: 22px; height: 22px; }
+nav.tabs a[aria-current="page"] { color: var(--ink); background: var(--paper); font-weight: 600; }
+.empty { text-align: center; color: var(--muted); padding: 24px 8px; }
+.toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 10; max-width: 90vw; }
+.sheet-bg { position: fixed; inset: 0; background: rgba(28,26,23,.4); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
+.sheet { background: var(--card); width: 100%; max-width: 560px; border-radius: 16px 16px 0 0; padding: 20px 18px calc(20px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 12px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <div class="brand">Skru Op<br>Club<small>Vi kommer og skruer op!</small></div>
+      <svg class="swoosh" viewBox="0 0 260 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2 8 C 70 2, 190 1, 258 7" fill="none" stroke="#1C1A17" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </div>
+    <div class="me-chip" id="meChip"></div>
+  </header>
+  <main id="view"></main>
+  <nav class="tabs" aria-label="Sektioner">
+    <div class="inner">
+      <a href="#opgaver" data-tab="opgaver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Opgaver</a>
+      <a href="#opret" data-tab="opret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg>Opret</a>
+      <a href="#medlemmer" data-tab="medlemmer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="9" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 19c1-3.5 3.5-5 6-5s5 1.5 6 5M14.5 18c.6-2 2-3 3.5-3s2.6 1 3 3"/></svg>Medlemmer</a>
+      <a href="#mig" data-tab="mig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-4 4-6 7-6s5.8 2 7 6"/></svg>Mig</a>
+    </div>
+  </nav>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  const TAGS = ["Privat","Single","Børnefamilie","Erhvervsdrivende","Caféejer","Selvstændig","Studerende","I arbejde","På barsel","Jobsøgende","Kreativ","Håndværker","Tilflytter","Ny i byen","Med et sideprojekt","Med en idé","Med en drøm","Søger sparring","Ønsker fællesskab"];
+  const SKILLS = ["Have","Maling","Flytning","Oprydning","Loft & kælder","Madlavning","Fest & pynt","Tømrer/værktøj","IT & tech","Syning","Børnepasning","Idéer & sparring"];
+  const ID = window.netlifyIdentity;
+
+  const S = { loggedIn: false, ready: false, error: "", uid: null, isAdmin: false,
+              members: {}, tasks: [], signups: [], filter: "kommende" };
+
+  const $ = (sel, el = document) => el.querySelector(sel);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const todayISO = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
+  const fmtDate = iso => {
+    if (!iso) return "Dato følger";
+    const d = new Date(iso + "T12:00:00");
+    return isNaN(d) ? esc(iso) : d.toLocaleDateString("da-DK", { weekday: "long", day: "numeric", month: "long" });
+  };
+  const initials = n => (n || "?").trim().split(/\s+/).slice(0, 2).map(w => w[0]).join("").toUpperCase();
+  const nameOf = uid => (S.members[uid] && S.members[uid].name) || "Et medlem";
+  function toast(msg) {
+    const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; t.setAttribute("role", "status");
+    document.body.appendChild(t); setTimeout(() => t.remove(), 2800);
+  }
+  const helpersOf = id => S.signups.filter(s => s.taskId === id).map(s => s.uid);
+  function scoreOf(uid) {
+    const done = S.tasks.filter(t => t.status === "done");
+    return { given: done.filter(t => helpersOf(t.id).includes(uid)).length, got: done.filter(t => t.host === uid).length };
+  }
+
+  // ---------- API ----------
+  async function api(method, path, body) {
+    const user = ID && ID.currentUser();
+    if (!user) { S.loggedIn = false; render(); throw new Error("not logged in"); }
+    const token = await user.jwt();
+    const res = await fetch("/api" + path, {
+      method, headers: { "content-type": "application/json", authorization: "Bearer " + token },
+      body: body ? JSON.stringify(body) : undefined
+    });
+    let data = {}; try { data = await res.json(); } catch (_) {}
+    if (!res.ok) { const e = new Error(data.error || "Det blev ikke gemt. Prøv igen."); e.status = res.status; throw e; }
+    return data;
+  }
+  async function load(background) {
+    try {
+      const d = await api("GET", "/state");
+      S.uid = d.me.uid; S.isAdmin = !!d.me.isAdmin;
+      S.members = d.members || {}; S.tasks = d.tasks || []; S.signups = d.signups || [];
+      S.ready = true; S.error = "";
+    } catch (e) {
+      if (background) return;
+      if (S.loggedIn) S.error =
+        e.status === 404 ? "Serverdelen (/api) findes ikke på sitet. Den bliver ikke deployet ved træk-og-slip: deploy via GitHub eller Netlify CLI. (Fejl 404)" :
+        e.status === 401 ? "Login blev ikke godkendt af serveren. Log ud og ind igen, og tjek at Identity er slået til. (Fejl 401)" :
+        e.status >= 500 ? "Serveren fejlede. Se Logs → Functions → api på Netlify. (Fejl " + e.status + ")" :
+        e.status ? e.message + " (Fejl " + e.status + ")" :
+        "Klubben kan ikke nås lige nu. Tjek forbindelsen og prøv igen.";
+    }
+    // A background refresh must never wipe a form someone is filling in
+    if (background && document.querySelector("#view form")) return;
+    render();
+  }
+  async function mutate(method, path, body, okMsg) {
+    try { await api(method, path, body); if (okMsg) toast(okMsg); await load(); return true; }
+    catch (e) { toast(e.message); return false; }
+  }
+
+  // ---------- views ----------
+  function currentTab() {
+    const h = (location.hash || "").slice(1);
+    return ["opgaver", "opret", "medlemmer", "mig"].includes(h) ? h : "opgaver";
+  }
+  function render() {
+    const tab = currentTab();
+    document.querySelectorAll("nav.tabs a").forEach(a => a.setAttribute("aria-current", a.dataset.tab === tab ? "page" : "false"));
+    document.querySelector("nav.tabs").hidden = !S.loggedIn;
+    const me = S.uid && S.members[S.uid];
+    $("#meChip").innerHTML = me ? `<b>${esc(me.name)}</b>${esc(me.area || "Medlem")}<br><button class="btn link" id="logout">Log ud</button>` : "";
+    let html = "";
+    if (!S.loggedIn) html = viewWelcome();
+    else if (S.error) html = `<p class="empty">${esc(S.error)}</p><button class="btn ghost" id="retry">Prøv igen</button>`;
+    else if (!S.ready) html = `<p class="empty">Henter klubben …</p>`;
+    else if (!me && tab !== "medlemmer") html = viewJoin();
+    else if (tab === "opgaver") html = viewTasks();
+    else if (tab === "opret") html = viewCreate();
+    else if (tab === "medlemmer") html = viewMembers();
+    else html = viewMe();
+    $("#view").innerHTML = html;
+    bind();
+  }
+
+  function viewWelcome() {
+    return `
+      <h2>Kender du det?</h2>
+      <p class="lead">Du har haft et projekt stående længe. Måske fordi det kræver to personer. Måske fordi det bare er svært at komme i gang med. Men så ringer din veninde, og selvfølgelig kommer du.</p>
+      <div class="card">
+        <h3>Vi bytter, fordi vi alle har noget at give</h3>
+        <p class="lead">Værten åbner sit hjem og sørger for mad, drikke og en dejlig lørdag. Vi andre kommer med arbejdskraft, idéer og energi. Næste gang er det en andens tur.</p>
+        <div class="row"><button class="btn" id="signup">Bliv medlem</button><button class="btn ghost" id="login">Log ind</button></div>
+      </div>
+      <p class="motto">Den der giver, får.</p>`;
+  }
+  function viewJoin() {
+    return `<h2>Velkommen indenfor</h2><p class="lead">Fortæl de andre lidt om dig, så er du med.</p>${profileForm({}, "Bliv medlem")}`;
+  }
+  function profileForm(m, cta) {
+    const tags = new Set(m.tags || []), skills = new Set(m.skills || []);
+    return `
+      <form class="card" id="profileForm" novalidate>
+        <h3>Hvem er du?</h3>
+        <div class="field"><label for="pf-name">Navn</label><span class="hint">Det, de andre skal kalde dig</span>
+          <input type="text" id="pf-name" maxlength="60" value="${esc(m.name)}" required></div>
+        <div class="field"><label for="pf-area">Bydel eller by</label><span class="hint">Så vi ved, hvor langt der er at cykle</span>
+          <input type="text" id="pf-area" maxlength="60" value="${esc(m.area)}" placeholder="fx Trøjborg, Aarhus N"></div>
+        <div class="field"><label>Du er fx …</label><span class="hint">Vælg så mange du vil. Forskellige liv, samme adgang.</span>
+          <div class="tags" data-group="tags">${TAGS.map(t => `<button type="button" class="tag" aria-pressed="${tags.has(t)}">${esc(t)}</button>`).join("")}</div></div>
+        <div class="field"><label>Jeg er god til</label><span class="hint">Det, du gerne giver af</span>
+          <div class="tags" data-group="skills">${SKILLS.map(t => `<button type="button" class="tag" aria-pressed="${skills.has(t)}">${esc(t)}</button>`).join("")}</div></div>
+        <div class="field"><label for="pf-about">Lidt om dig</label><span class="hint">Valgfrit: dit projekt, din drøm, din yndlingskage</span>
+          <textarea id="pf-about" maxlength="400">${esc(m.about)}</textarea></div>
+        <p class="err" id="pf-err" hidden></p>
+        <button class="btn" type="submit">${esc(cta)}</button>
+      </form>`;
+  }
+  function taskCard(t) {
+    const helpers = helpersOf(t.id), hands = Math.max(1, Math.min(12, Number(t.hands) || 3));
+    const full = helpers.length >= hands, mine = t.host === S.uid, going = helpers.includes(S.uid), done = t.status === "done";
+    let status = done ? `<span class="status done">Skruet op</span>` : full ? `<span class="status full">Fuldt hold</span>` : `<span class="status open">Mangler ${hands - helpers.length}</span>`;
+    if (mine) status += ` <span class="status mine">Din opgave</span>`;
+    const dots = Array.from({ length: hands }, (_, i) => `<span class="dot ${i < helpers.length ? "on" : ""}"></span>`).join("");
+    let actions = "";
+    if (!done && !mine) actions = going
+      ? `<button class="btn ghost small" data-act="leave" data-id="${esc(t.id)}">Jeg kan alligevel ikke</button>`
+      : `<button class="btn go small" data-act="join" data-id="${esc(t.id)}" ${full ? "disabled" : ""}>Jeg kommer</button>`;
+    if (mine || S.isAdmin) {
+      if (!done) actions += ` <button class="btn small" data-act="done" data-id="${esc(t.id)}">Marker som skruet op</button>`;
+      actions += ` <button class="btn link" data-act="delete" data-id="${esc(t.id)}">Slet</button>`;
+    }
+    return `
+      <article class="task ${done ? "done" : ""}">
+        <div class="row">${status}</div>
+        <div class="when"><span class="datebox">${fmtDate(t.date)}</span>${t.time ? `<span>kl. ${esc(t.time)}</span>` : ""}</div>
+        ${S.filter === "alle" && t.createdAt ? `<div class="who">Oprettet ${esc(new Date(t.createdAt).toLocaleString("da-DK", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))} af ${esc(nameOf(t.host))}</div>` : ""}
+        <h3>${esc(t.title)}</h3>
+        <dl class="facts">
+          <dt>Vært</dt><dd>${esc(nameOf(t.host))}</dd>
+          <dt>Sted</dt><dd>${esc(t.place) || "Oplyses af værten"}</dd>
+          ${t.bring ? `<dt>Medbring</dt><dd>${esc(t.bring)}</dd>` : ""}
+          ${t.plan ? `<dt>Værten byder på</dt><dd>${esc(t.plan)}</dd>` : ""}
+        </dl>
+        <div class="hands"><div class="dots" aria-hidden="true">${dots}</div><span>${helpers.length} af ${hands} hænder</span></div>
+        <div class="who">Kommer: ${esc(helpers.length ? helpers.map(nameOf).join(", ") : "Ingen endnu")}</div>
+        ${actions ? `<div class="row">${actions}</div>` : ""}
+      </article>`;
+  }
+  function viewTasks() {
+    const today = todayISO(), f = S.filter;
+    let list = S.tasks.slice();
+    if (f === "kommende") list = list.filter(t => t.status !== "done" && (!t.date || t.date >= today));
+    if (f === "mine") list = list.filter(t => t.host === S.uid || helpersOf(t.id).includes(S.uid));
+    if (f === "afsluttet") list = list.filter(t => t.status === "done" || (t.date && t.date < today));
+    if (f === "alle") list.sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+    else list.sort((a, b) => (f === "afsluttet" ? -1 : 1) * String(a.date || "9999").localeCompare(String(b.date || "9999")));
+    const sc = scoreOf(S.uid);
+    const open = S.tasks.filter(t => t.status !== "done" && (!t.date || t.date >= today) && helpersOf(t.id).length < (Number(t.hands) || 3)).length;
+    return `
+      <div class="balance">
+        <div class="tile"><div class="n">${sc.given}</div><div class="l">gange du har skruet op hos andre</div></div>
+        <div class="tile"><div class="n">${open}</div><div class="l">opgaver mangler hænder lige nu</div></div>
+      </div>
+      <p class="motto">Den der giver, får.</p>
+      <div class="filters" role="group" aria-label="Filter">
+        ${[["kommende", "Kommende"], ["mine", "Mine"], ["afsluttet", "Afsluttede"]].concat(S.isAdmin ? [["alle", `Alle indkomne (${S.tasks.length})`]] : []).map(([k, l]) => `<button class="pill" data-filter="${k}" aria-pressed="${f === k}">${l}</button>`).join("")}
+      </div>
+      ${list.length ? list.map(taskCard).join("") : `<div class="empty">${f === "kommende" ? "Ingen kommende opgaver endnu.<br>Har du et loft, der skal tømmes? <a href=\"#opret\">Opret den første</a>." : "Intet her endnu."}</div>`}`;
+  }
+  function viewCreate() {
+    return `
+      <h2>Opret en opgave</h2>
+      <p class="lead">Du åbner dit hjem og sørger for en dejlig dag. Vi andre kommer med hænderne.</p>
+      <form class="card" id="taskForm" novalidate>
+        <div class="field"><label for="tf-title">Opgave</label><span class="hint">Hvad skal der laves? (fx have, loft, flytning, maling, oprydning …)</span>
+          <input type="text" id="tf-title" maxlength="90" required placeholder="fx Loftet skal tømmes før vinteren"></div>
+        <div class="field"><label for="tf-date">Dato</label><span class="hint">Hvornår har du brug for hjælp?</span>
+          <div class="two"><input type="date" id="tf-date" min="${todayISO()}" required><input type="time" id="tf-time" value="10:00" aria-label="Starttidspunkt"></div></div>
+        <div class="field"><label for="tf-place">Sted</label><span class="hint">Hvor foregår det?</span>
+          <input type="text" id="tf-place" maxlength="120" placeholder="Adresse eller bydel"></div>
+        <div class="field"><label for="tf-hands">Hvor mange hænder?</label><span class="hint">Hvor mange skal du bruge, ud over dig selv?</span>
+          <input type="number" id="tf-hands" min="1" max="12" value="3"></div>
+        <div class="field"><label for="tf-bring">Medbring</label><span class="hint">Er der særligt udstyr eller materialer, vi skal tage med?</span>
+          <input type="text" id="tf-bring" maxlength="160" placeholder="fx arbejdshandsker, trailer"></div>
+        <div class="field"><label for="tf-plan">Værtens plan</label><span class="hint">Hvad sørger du for? (fx frokost, kaffe, vin, snacks …)</span>
+          <textarea id="tf-plan" maxlength="300" placeholder="fx Frokost kl. 12 og kage til eftermiddagskaffen"></textarea></div>
+        <p class="err" id="tf-err" hidden></p>
+        <button class="btn" type="submit">Del opgaven med klubben</button>
+      </form>`;
+  }
+  function viewMembers() {
+    const ids = Object.keys(S.members);
+    ids.sort((a, b) => scoreOf(b).given - scoreOf(a).given || nameOf(a).localeCompare(nameOf(b), "da"));
+    return `
+      <h2>Vi kommer med hver vores</h2>
+      <p class="lead">${ids.length ? `${ids.length} ${ids.length === 1 ? "medlem" : "medlemmer"} indtil videre.` : "Ingen medlemmer endnu."}</p>
+      ${ids.map(id => { const m = S.members[id], sc = scoreOf(id); return `
+        <article class="member">
+          <div class="avatar" aria-hidden="true">${esc(initials(m.name))}</div>
+          <div>
+            <h3>${esc(m.name)}${id === S.uid ? " (dig)" : ""}</h3>
+            ${m.area ? `<div class="meta">${esc(m.area)}</div>` : ""}
+            ${m.about ? `<p>${esc(m.about)}</p>` : ""}
+            ${(m.skills || []).length ? `<div class="chips">${m.skills.map(s => `<span class="chip">${esc(s)}</span>`).join("")}</div>` : ""}
+            <div class="score">Har givet ${sc.given} · har fået ${sc.got}</div>
+          </div>
+        </article>`; }).join("")}`;
+  }
+  function viewMe() {
+    const me = S.members[S.uid] || {}, sc = scoreOf(S.uid);
+    return `
+      <div class="balance">
+        <div class="tile"><div class="n">${sc.given}</div><div class="l">gange givet</div></div>
+        <div class="tile"><div class="n">${sc.got}</div><div class="l">gange fået hjælp</div></div>
+      </div>
+      <p class="motto">${sc.given >= sc.got ? "Du har noget til gode. Opret en opgave, når du er klar." : "Næste gang er det en andens tur. Kig efter en opgave, der mangler hænder."}</p>
+      ${profileForm(me, "Gem profil")}`;
+  }
+
+  // ---------- events ----------
+  function bind() {
+    const on = (id, fn) => { const el = document.getElementById(id); if (el) el.onclick = fn; };
+    on("signup", () => ID && ID.open("signup"));
+    on("login", () => ID && ID.open("login"));
+    on("logout", () => ID && ID.logout());
+    on("retry", () => { S.error = ""; render(); load(); });
+    document.querySelectorAll("[data-filter]").forEach(b => b.onclick = () => { S.filter = b.dataset.filter; render(); });
+    document.querySelectorAll(".tag").forEach(b => b.onclick = () => b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true"));
+    document.querySelectorAll("[data-act]").forEach(b => b.onclick = () => act(b.dataset.act, b.dataset.id, b));
+    const pf = $("#profileForm"); if (pf) pf.onsubmit = saveProfile;
+    const tf = $("#taskForm"); if (tf) tf.onsubmit = saveTask;
+  }
+  async function saveProfile(e) {
+    e.preventDefault();
+    const name = $("#pf-name").value.trim(), err = $("#pf-err");
+    if (!name) { err.textContent = "Skriv dit navn, så de andre ved, hvem der kommer."; err.hidden = false; $("#pf-name").focus(); return; }
+    const pick = g => [...document.querySelectorAll(`[data-group="${g}"] .tag[aria-pressed="true"]`)].map(b => b.textContent);
+    const isNew = !S.members[S.uid];
+    const btn = $("#profileForm button[type=submit]"); btn.disabled = true;
+    const ok = await mutate("PUT", "/profile", { name, area: $("#pf-area").value, about: $("#pf-about").value, tags: pick("tags"), skills: pick("skills") },
+                            isNew ? "Velkommen i klubben!" : "Profilen er gemt");
+    if (ok && isNew) location.hash = "#opgaver"; else if (!ok) btn.disabled = false;
+  }
+  async function saveTask(e) {
+    e.preventDefault();
+    const title = $("#tf-title").value.trim(), date = $("#tf-date").value, err = $("#tf-err");
+    if (!title || !date) { err.textContent = !title ? "Skriv kort, hvad der skal laves." : "Vælg en dato."; err.hidden = false; (!title ? $("#tf-title") : $("#tf-date")).focus(); return; }
+    const btn = $("#taskForm button[type=submit]"); btn.disabled = true;
+    const ok = await mutate("POST", "/tasks", { title, date, time: $("#tf-time").value, place: $("#tf-place").value,
+      hands: $("#tf-hands").value, bring: $("#tf-bring").value, plan: $("#tf-plan").value }, "Opgaven er delt med klubben");
+    if (ok) { S.filter = "kommende"; location.hash = "#opgaver"; } else btn.disabled = false;
+  }
+  async function act(kind, id, btn) {
+    const t = S.tasks.find(x => x.id === id); if (!t) return;
+    if (kind === "delete") return askDelete(t);
+    btn.disabled = true;
+    const msg = { join: "Fedt! Værten kan se, at du kommer.", leave: "Du er meldt fra", done: "Skruet op! Tak til holdet." }[kind];
+    const ok = await mutate("POST", `/tasks/${encodeURIComponent(id)}/${kind}`, null, msg);
+    if (!ok) btn.disabled = false;
+  }
+  function askDelete(t) {
+    const bg = document.createElement("div"); bg.className = "sheet-bg";
+    bg.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="delh"><h3 id="delh">Slet "${esc(t.title)}"?</h3><p class="lead">Dem, der har meldt sig, kan ikke længere se opgaven.</p><div class="row"><button class="btn" id="delYes">Slet opgaven</button><button class="btn ghost" id="delNo">Behold den</button></div></div>`;
+    document.body.appendChild(bg);
+    const close = () => bg.remove();
+    bg.onclick = e => { if (e.target === bg) close(); };
+    $("#delNo", bg).onclick = close;
+    $("#delYes", bg).onclick = async () => { close(); await mutate("DELETE", `/tasks/${encodeURIComponent(t.id)}`, null, "Opgaven er slettet"); };
+    $("#delNo", bg).focus();
+  }
+
+  window.addEventListener("hashchange", () => { render(); window.scrollTo(0, 0); });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && S.loggedIn) load(true); });
+  setInterval(() => { if (!document.hidden && S.loggedIn) load(true); }, 30000);
+
+  // ---------- start ----------
+  if (!ID) { $("#view").innerHTML = `<p class="empty">Login-modulet kunne ikke hentes. Genindlæs siden.</p>`; return; }
+  ID.on("init", user => { S.loggedIn = !!user; render(); if (user) load(); });
+  ID.on("login", () => { ID.close(); S.loggedIn = true; S.ready = false; render(); load(); });
+  ID.on("logout", () => { Object.assign(S, { loggedIn: false, ready: false, uid: null, members: {}, tasks: [], signups: [] }); render(); });
+  ID.init();
+})();
+
+</script>
+</body>
+</html>
